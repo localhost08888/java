@@ -1,0 +1,368 @@
+----------------------------------   collection1.java----------------------------
+
+import java.util.Scanner;
+import java.util.TreeSet;
+
+public class collection1
+{
+  public  static void main(String arg[])
+  {
+      Scanner sc =new Scanner(System.in);
+
+      TreeSet<Integer> x= new TreeSet<>();   // declaring new tree setof integers
+
+      System.out.println("enter the number of elements");
+      int n =sc.nextInt();
+
+      System.out.println("enter "+n+" numbers-");
+      for(int i=0;i<n;i++ )
+        {
+          int num=sc.nextInt();
+          x.add(num);
+        }
+
+      System.out.println("Numbers in sorted order are"+ x);
+
+      System.out.println("Enter element to search");
+      int ele=sc.nextInt();
+        if(x.contains(ele))
+        {
+          System.out.println("Element found");
+        }
+        else
+        {
+          System.out.println("Element not found");
+        } 
+      sc.close();
+  }
+} 
+
+----------------------------------   collection2.java----------------------------
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+public class collection2 
+{
+    public static void main(String[] args) 
+    {
+        LinkedList<String> clr = new LinkedList<>();
+        clr.add("red");
+        clr.add("blue");
+        clr.add("yellow");
+        clr.add("orange");
+ 
+        System.out.println("List elements by iterator function:");
+        Iterator<String> x = clr.iterator(); 
+
+        while (x.hasNext()) 
+        {
+            String color = x.next();  
+            System.out.println(color);
+        }
+ 
+        System.out.println("List elements in reverse order by ListIterator:");
+        ListIterator<String> y = clr.listIterator(clr.size()); 
+        while (y.hasPrevious())
+         {
+            System.out.println(y.previous());
+        }
+
+        LinkedList<String> newColors = new LinkedList<>();
+        newColors.add("pink");
+        newColors.add("green");
+ 
+        int index = clr.indexOf("blue") + 1; 
+        clr.addAll(index, newColors);  
+
+        
+        System.out.println("\nFinal list of colors after insertion:");
+        for (String color : clr) 
+         {
+            System.out.println(color);
+         }
+    }
+} 
+
+----------------------------------   collection3.java----------------------------
+
+import java.util.Hashtable;
+import java.util.Scanner;
+
+public class collection3
+ {
+  public static void main(String[] args)
+    {
+      Hashtable<String,Double> details=new Hashtable<String,Double> ();
+
+      details.put("nilesh",85.5);
+      details.put("vishal",75.5);
+      details.put("omkar",25.5);
+      details.put("jaya",35.5); 
+      details.put("mila",95.5);
+
+      System.out.println("Student Details:");
+        for(String key:details.keySet())
+        {
+          System.out.println("Name: " + key + "-- Percentage: " + details.get(key));
+        }
+        
+     
+        Scanner sc= new Scanner(System.in);
+        System.out.print("\nEnter the name of the student to search: ");
+        String studentName = sc.nextLine();
+        
+        if(details.containsKey(studentName))
+          {
+            double per=details.get(studentName);
+            System.out.println("Percentage of "+studentName+ " is " + per);
+          }
+        else
+          {
+            System.out.println("student not found");
+          }
+    }
+} 
+
+----------------------------------   collection4.java----------------------------
+
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import javax.swing.*;
+
+public class collection4 extends JFrame implements ActionListener
+ {
+    JTextField txtname, txtstd;
+    JButton btnadd, btndelete, btnsearch;
+    JPanel p1;
+
+    Hashtable<String, String> table = new Hashtable<>();
+    collection4()
+     {
+        setTitle("City STD Code Information");
+        setSize(700, 500);
+        setVisible(true);
+
+        setLayout(new GridLayout(3, 2, 20, 20));
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JLabel name = new JLabel("Enter City Name: ");
+        add(name);
+        txtname = new JTextField(10);
+        add(txtname);
+
+        JLabel stdcode = new JLabel("Enter STD Code: ");
+        add(stdcode);
+        txtstd = new JTextField(10);
+        add(txtstd);
+
+        JLabel op = new JLabel("Choose Operation: ");
+        add(op);
+
+        p1 = new JPanel();
+        p1.setLayout(new GridLayout(1, 3, 5, 5));
+
+        btnadd = new JButton("Add");
+        p1.add(btnadd);
+        btnadd.addActionListener(this);
+        btndelete = new JButton("Delete");
+        p1.add(btndelete);
+        btndelete.addActionListener(this);
+        btnsearch = new JButton("Search");
+        p1.add(btnsearch);
+        btnsearch.addActionListener(this);
+        add(p1);
+
+    }
+    @Override
+    public void actionPerformed(ActionEvent ae)
+     {
+        String name = txtname.getText().trim();
+        String std = txtstd.getText().trim();
+        if (ae.getSource() == btnadd)
+         {
+               if (name.isEmpty() || std.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Fields cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+               }
+               if (table.containsKey(name) || table.containsValue(std)) 
+               {
+                JOptionPane.showMessageDialog(null,"Duplicates are not allowed", "Error", JOptionPane.ERROR_MESSAGE);
+               } 
+            else
+             {
+                table.put(name, std);
+                JOptionPane.showMessageDialog(null, "Successfully Added City & STD Code", name,
+                        JOptionPane.INFORMATION_MESSAGE);
+              }
+            txtname.setText("");
+            txtstd.setText("");
+        }
+        if (ae.getSource() == btndelete) 
+        {
+           String s1 = JOptionPane.showInputDialog(null, "Enter City to remove");
+           if (s1 != null && table.containsKey(s1)) {
+            table.remove(s1);
+            JOptionPane.showMessageDialog(null, "Successfully removed City & STD Code", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+           } else {
+            JOptionPane.showMessageDialog(null, "City not found", "Error", JOptionPane.ERROR_MESSAGE);
+           }
+        }
+        if (ae.getSource() == btnsearch)
+         {
+            String s1 = JOptionPane.showInputDialog(null, "Enter City");
+            if (s1 != null && table.containsKey(s1))
+             {
+                String s2 = "STD Code: " + table.get(s1);
+                JOptionPane.showMessageDialog(null, s2);
+            }
+             else 
+              {
+                JOptionPane.showMessageDialog(null, "City not found", "Error", JOptionPane.ERROR_MESSAGE);
+           }
+        }
+    }
+   public static void main(String[] args) 
+   {
+        new collection4();
+    }
+} 
+
+----------------------------------   collection5.java----------------------------
+
+import java.io.*;
+import java.util.*;
+
+public class collection5
+  {
+    public static void main(String[] args) 
+       {
+        if (args.length < 1)
+         {
+            System.out.println("Please specify the file name as a command-line argument.");
+            return;
+        }
+
+        String fileName = args[0];
+        List<String> lines = new ArrayList<>();
+
+        // Read the file into the list
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) 
+        {
+            String line;
+            while ((line = reader.readLine()) != null) 
+            {
+                lines.add(line);
+            }
+        } catch (IOException e) 
+        {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        boolean exit = false;
+
+        while (!exit)
+         {
+            // Display menu
+            System.out.println("\nMenu:");
+            System.out.println("1. Insert line");
+            System.out.println("2. Delete line");
+            System.out.println("3. Append line");
+            System.out.println("4. Modify line");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume the newline
+
+            switch (choice) 
+            {
+                case 1: // Insert line
+                    System.out.print("Enter the line to insert: ");
+                    String newLine = scanner.nextLine();
+                    System.out.print("Enter the position (1-based index): ");
+                    int position = scanner.nextInt();
+                    scanner.nextLine(); // Consume the newline
+
+                    if (position > 0 && position <= lines.size() + 1) 
+                    {
+                        lines.add(position - 1, newLine);
+                        System.out.println("Line inserted successfully.");
+                    }
+                    else
+                   {
+                        System.out.println("Invalid position.");
+                    }
+                    break;
+
+                case 2:  
+                    System.out.print("Enter the position (1-based index) of the line to delete: ");
+                    int deletePosition = scanner.nextInt();
+                    scanner.nextLine();  
+
+                    if (deletePosition > 0 && deletePosition <= lines.size()) 
+                    {
+                        lines.remove(deletePosition - 1);
+                        System.out.println("Line deleted successfully.");
+                    } 
+                    else
+                     {
+                        System.out.println("Invalid position.");
+                    }
+                    break;
+
+                case 3:  
+                    System.out.print("Enter the line to append: ");
+                    String appendLine = scanner.nextLine();
+                    lines.add(appendLine);
+                    System.out.println("Line appended successfully.");
+                    break;
+
+                case 4: 
+                    System.out.print("Enter the position (1-based index) of the line to modify: ");
+                    int modifyPosition = scanner.nextInt();
+                    scanner.nextLine();  
+
+                    if (modifyPosition > 0 && modifyPosition <= lines.size()) 
+                    {
+                        System.out.print("Enter the new content: ");
+                        String modifiedLine = scanner.nextLine();
+                        lines.set(modifyPosition - 1, modifiedLine);
+                        System.out.println("Line modified successfully.");
+                    }
+                     else 
+                    {
+                        System.out.println("Invalid position.");
+                    }
+                    break;
+
+                case 5: 
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) 
+                    {
+                        for (String line : lines)
+                        {
+                            writer.write(line);
+                            writer.newLine();
+                        }
+                        System.out.println("File saved successfully.");
+                    } 
+                    catch (IOException e) 
+                    {
+                        System.out.println("Error writing to file: " + e.getMessage());
+                    }
+                    exit = true;
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+
+        scanner.close();
+    }
+} 
