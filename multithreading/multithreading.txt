@@ -1,0 +1,498 @@
+ 
+ File: messagethread.java
+ =============================================
+
+class MessageThread extends Thread 
+{
+    private String message; 
+    public MessageThread(String message) 
+     {
+        this.message = message;  
+    }
+
+    @Override   
+    public void run() 
+    {
+        while (true)
+         {
+            System.out.println(Thread.currentThread().getName() + " - " + message);
+            try 
+            {
+                Thread.sleep(2000); // Sleep for 2 second
+            } 
+            catch (InterruptedException e)
+             {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+
+public class messagethread 
+{
+public static void main(String[] args) 
+    {
+        
+        new MessageThread("Hello from Thread 1").start();
+        new MessageThread("Hello from Thread 2").start();
+    }
+}
+
+ 
+ File: parallelsum.java
+// =============================================
+
+import java.util.Random;
+
+class SumTask extends Thread
+ {
+    private int[] array;
+    private int start, end;
+    private long partialSum;
+
+    public SumTask(int[] array, int start, int end) 
+    {
+        this.array = array;
+        this.start = start;
+        this.end = end;
+    }
+
+    public long getPartialSum() 
+    {
+        return partialSum;
+    }
+
+    public void run() 
+    {
+        partialSum = 0;
+        for (int i = start; i < end; i++)
+         {
+            partialSum += array[i];
+        }
+    }
+}
+
+public class parallelsum
+{
+    public static void main(String[] args) throws InterruptedException
+     {
+        int[] array = new int[1000];
+        Random random = new Random();
+
+        // Fill the array with random integers
+        for (int i = 0; i < array.length; i++)
+         {
+            array[i] = random.nextInt(100); // Random numbers between 0 and 99
+        }
+
+        // Create and start 10 threads
+        SumTask[] threads = new SumTask[10];
+        for (int i = 0; i < 10; i++)
+         {
+            int start = i * 100;
+            int end = start + 100;
+            threads[i] = new SumTask(array, start, end);
+            threads[i].start();
+        }
+ 
+        long totalSum = 0;
+        for (SumTask thread : threads)
+         {
+            thread.join();
+            totalSum += thread.getPartialSum();
+        }
+ 
+        double average = (double) totalSum / array.length;
+ 
+        System.out.println("Total Sum: " + totalSum);
+        System.out.println("Average: " + average);
+    }
+}
+
+ 
+// File: textprinter.java
+// =============================================
+
+class PrintText_Thread extends Thread 
+{
+  private String text;
+  private int n;
+
+  public PrintText_Thread(String text, int n) 
+  {
+      this.text = text;
+      this.n = n;
+  }
+
+  public void run() 
+  {
+      for (int i = 0; i < n; i++)
+       {
+          System.out.println(text);
+      }
+  }
+}
+
+public class textprinter
+ {
+  public static void main(String args[])
+   {
+      // Create and start three threads
+      PrintText_Thread thread1 = new PrintText_Thread("I am in FY", 10); 
+      // arguments like parameterized constructor
+      PrintText_Thread thread2 = new PrintText_Thread("I am in SY", 20);
+      PrintText_Thread thread3 = new PrintText_Thread("I am in TY", 30);
+
+      thread1.start();
+      thread2.start();
+      thread3.start();
+  }
+}
+ 
+// File: filesearch.java
+// =============================================
+
+import java.io.*;
+import java.util.*;
+
+class FileSearchThread extends Thread 
+{
+    private File file;
+    private String searchString;
+
+    public FileSearchThread(File file, String searchString) 
+    {
+        this.file = file;
+        this.searchString = searchString;
+    }
+
+    @Override
+    public void run() 
+    {
+        try (BufferedReader br = new BufferedReader(new FileReader(file)))
+         {
+            String line;
+            int lineNumber = 1;
+            while ((line = br.readLine()) != null)
+            {
+                if (line.contains(searchString))
+                 {
+                    System.out.println(file.getName() + " - Line " + lineNumber + ": " + line);
+                }
+                lineNumber++;
+            }
+        }
+         catch (IOException e) 
+        {
+            System.err.println("Error reading file: " + file.getName());
+            e.printStackTrace();
+        }
+    }
+}
+
+public classfilesearch
+{
+    public static void main(String[] args) 
+    {
+        // Accept the search string from the user
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the string to search: ");
+
+        String searchString = scanner.nextLine();
+
+        // Get all .txt files in the current directory
+        File folder = new File(".");
+        File[] files = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".txt"));
+
+        if (files == null || files.length == 0) 
+        {
+            System.out.println("No text files found in the current folder.");
+            return;
+        }
+
+        // Create and start a separate thread for each file
+        for (File file : files)
+         {
+            new FileSearchThread(file, searchString).start();
+        }
+    }
+}
+ 
+// File: bouncingballs.java
+// =============================================
+
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Random;
+import javax.swing.*;
+
+// Thread class to move a ball vertically within the panel
+class BallThread extends Thread 
+{
+    private int x;            // Fixed horizontal position (centered)
+    private int y;            // Current vertical position
+    private final int diameter = 20;
+    private int dy = 2;       // Vertical velocity
+    private Color color;
+    private BallPanel panel;
+    
+    public BallThread(BallPanel panel, int x, int y, Color color)
+     {
+        this.panel = panel;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+    }
+    
+    @Override
+    public void run()
+     {
+        while (true)
+         {
+            y += dy;
+            if (y < 0)
+             {
+                y = 0;
+                dy = -dy;
+            }
+            // Bounce off the bottom boundary
+            if (y > panel.getHeight() - diameter) 
+            {
+                y = panel.getHeight() - diameter;
+                dy = -dy;
+            }
+            panel.repaint();  // Request the panel to repaint with the new position
+            try 
+            {
+                Thread.sleep(20);
+            } 
+            catch (InterruptedException e)
+             {
+                break;
+            }
+        }
+    }
+    
+    // Getters for drawing the ball
+    public int getX()
+          { 
+            return x;
+         }
+    public int getY() 
+         { 
+            return y;
+        }
+    public int getDiameter() 
+    {
+         return diameter; 
+        }
+    public Color getColor()
+     {
+         return color; 
+    }
+}
+
+// Panel that keeps track of all balls and draws them
+class BallPanel extends JPanel
+ {
+    private ArrayList<BallThread> balls = new ArrayList<>();
+    
+    public void addBall(BallThread ball)
+     {
+        balls.add(ball);
+        ball.start();
+    }
+    
+    @Override
+    protected void paintComponent(Graphics g)
+     {
+        super.paintComponent(g);
+        for (BallThread ball : balls)
+         {
+            g.setColor(ball.getColor());
+            g.fillOval(ball.getX(), ball.getY(), ball.getDiameter(), ball.getDiameter());
+        }
+    }
+}
+
+ 
+public class bouncingballs extends JFrame
+ {
+    private BallPanel ballPanel;
+    private JButton startButton;
+    
+    public bouncingballs()
+     {
+        setTitle("Vertical Moving Balls");
+        setSize(400, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        
+        ballPanel = new BallPanel();
+        ballPanel.setBackground(Color.WHITE);
+        add(ballPanel, BorderLayout.CENTER);
+        
+        startButton = new JButton("Start");
+        add(startButton, BorderLayout.SOUTH);
+        
+        startButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+             {
+                // Create a new ball with random vertical position and random color
+                Random rand = new Random();
+                int panelHeight = ballPanel.getHeight();
+                int panelWidth = ballPanel.getWidth();
+                // If the panel is not yet visible, use default sizes
+                if (panelHeight <= 0)
+                 { 
+                    panelHeight = 400; 
+                 }
+                if (panelWidth <= 0) 
+                {
+                     panelWidth = 400;
+                 }
+                // For vertical movement, fix the x coordinate to the center
+                int x = panelWidth / 2;
+                // Random initial y position (ensuring the ball is fully within the panel)
+                int y = rand.nextInt(panelHeight - 20);
+                // Generate a random color
+                Color color = new Color(rand.nextInt(256), rand.nextInt(256), rand.nextInt(256));
+                BallThread ball = new BallThread(ballPanel, x, y, color);
+                ballPanel.addBall(ball);
+            }
+        });
+    }
+    
+    public static void main(String[] args)
+     {
+        SwingUtilities.invokeLater(() ->
+         {
+            bouncingballs frame = new bouncingballs();
+            frame.setVisible(true);
+        });
+    }
+}
+
+// =============================================
+// File: filewatcher.java
+// =============================================
+
+import java.io.File;
+
+class FileWatcherThread extends Thread 
+{
+    private String fileName;
+
+    public FileWatcherThread(String fileName) 
+    {
+        this.fileName = fileName;
+    }
+
+    @Override
+    public void run()
+     {
+        File file = new File(fileName);
+        while (true)
+         {
+            if (file.exists()) 
+            {
+                System.out.println("File " + fileName + " exists.");
+                break; // Exit the thread once the file is found
+            }
+             else
+             {
+                System.out.println("File " + fileName + " does not exist. Checking again in 3 seconds...");
+                try 
+                {
+                    Thread.sleep(3000); // Wait for 5 seconds before checking again
+                }
+                 catch (InterruptedException e)
+                 {
+                    System.err.println("Thread interrupted: " + e.getMessage());
+                    break;
+                }
+            }
+        }
+    }
+}
+
+public class filewatcher 
+{
+    public static void main(String[] args)
+     {
+        if (args.length == 0)
+         {
+            System.out.println("Usage: java FileWatcher <file1> <file2> ...");
+            return;
+        }
+
+        for (String fileName : args) 
+        {
+            new FileWatcherThread(fileName).start();
+        }
+    }
+}
+
+ 
+  
+ =================File: trafficsignal.java============================
+
+class TrafficSignal extends Thread
+ {
+  private String signalColor;
+
+  public TrafficSignal(String initialColor) 
+  {
+      this.signalColor = initialColor;
+  }
+
+  @Override
+  public void run()
+   {
+      while (true) 
+      {
+          switch (signalColor)
+           {
+              case "RED":
+                  System.out.println("Signal is RED. Stop!");
+                  sleepFor(5000); // Red for 5 seconds
+                  signalColor = "GREEN";
+                  break;
+              case "GREEN":
+                  System.out.println("Signal is GREEN. Go!");
+                  sleepFor(5000); // Green for 5 seconds
+                  signalColor = "YELLOW";
+                  break;
+              case "YELLOW":
+                  System.out.println("Signal is YELLOW. Get Ready!");
+                  sleepFor(2000); // Yellow for 2 seconds
+                  signalColor = "RED";
+                  break;
+          }
+      }
+  }
+
+  private void sleepFor(int milliseconds)
+   {
+      try 
+      {
+          Thread.sleep(milliseconds);
+      } 
+      catch (InterruptedException e)
+       {
+          System.err.println("Signal interrupted: " + e.getMessage());
+      }
+  }
+}
+
+public class trafficsignal
+ {
+  public static void main(String[] args) 
+  {
+      TrafficSignal signal = new TrafficSignal("RED");
+      signal.start();
+  }
+} 
