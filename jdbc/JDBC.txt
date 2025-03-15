@@ -1,0 +1,1135 @@
+==================================================
+JDBC1 - Basic JDBC Connection Example
+==================================================
+import java.sql.*;
+import java.util.Scanner;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+public class JDBC1
+ {
+    public static void main(String[] args) throws Exception 
+		{
+        Connection conn = null;
+        PreparedStatement psInsert = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        Scanner scanner = new Scanner(System.in);
+
+        Class.forName("org.postgresql.Driver");
+
+        conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+        psInsert = conn.prepareStatement("INSERT INTO student(rollno, name, percentage) VALUES (?, ?, ?)");
+
+        if (conn != null)
+				 {
+            System.out.println("Connection successful...");
+
+            System.out.print("Enter roll number: ");
+            int rollNo = scanner.nextInt();
+            System.out.print("Enter name: ");
+            scanner.nextLine(); // Consume the leftover newline
+            String sname = scanner.nextLine();
+            System.out.print("Enter percentage: ");
+            double percentage = scanner.nextDouble();
+
+            psInsert.setInt(1, rollNo);
+            psInsert.setString(2, sname);
+            psInsert.setDouble(3, percentage);
+
+            psInsert.executeUpdate();
+            System.out.println("Record inserted successfully!");
+
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM student");
+
+            JFrame frame = new JFrame("Student Details");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(500, 300);
+
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("Roll Number");
+            model.addColumn("Name");
+            model.addColumn("Percentage");
+
+            while (rs.next()) 
+						{
+                model.addRow(new Object[]
+								{
+                        rs.getInt("rollno"),
+                        rs.getString("name"),
+                        rs.getDouble("percentage") 
+                });
+            }
+            JTable table = new JTable(model);
+            JScrollPane scrollPane = new JScrollPane(table);
+            frame.add(scrollPane);
+            frame.setVisible(true);
+        }
+
+        
+        if (rs != null) rs.close();
+        if (stmt != null) stmt.close();
+        if (psInsert != null) psInsert.close();
+        if (conn != null) conn.close();
+        scanner.close();
+    }
+}
+
+// CREATE TABLE student (
+//     rollno INT PRIMARY KEY,
+//     name VARCHAR(100) NOT NULL,
+//     percentage DECIMAL(5,2) NOT NULL
+// );
+
+
+==================================================
+JDBC2 - Simple Database Query Example
+==================================================
+import java.sql.*;
+public class JDBC2
+{
+	public static void main(String[] args) throws Exception
+ {
+		Connection conn=null;
+		Class.forName("org.postgresql.Driver");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+
+		if(conn!=null)
+		{
+			System.out.println("Conncetion successful...");
+			DatabaseMetaData dbmd=conn.getMetaData();
+
+			System.out.println("Database Name:"+dbmd.getDatabaseProductName());
+			System.out.println("Database Version:"+dbmd.getDatabaseProductVersion());
+			System.out.println("Driver Name:"+dbmd.getDriverName());
+			System.out.println("Driver Version:"+dbmd.getDriverVersion());
+
+			ResultSet rs=dbmd.getTables(null,null,null,new String[]{"TABLE"});
+			System.out.println("Tables in Databases");
+			while(rs.next())
+			{
+				System.out.println(rs.getString("TABLE_NAME"));
+			}
+			conn.close();
+		}
+		else
+		{
+			System.out.println("Connection failed");
+		}
+	}
+}
+
+// CREATE DATABASE tya13;
+// \c tya13
+//  CREATE TABLE users 
+// (
+//     id SERIAL PRIMARY KEY,
+//     name VARCHAR(100) NOT NULL,
+//     email VARCHAR(150) UNIQUE NOT NULL,
+//     password TEXT NOT NULL,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+//  );
+
+
+
+==================================================
+JDBC3 - Database Insert/Update/Delete Example
+==================================================
+import java.sql.*;
+
+public class JDBC3
+{
+	public static void main(String[] args)throws Exception
+	{
+		Connection conn=null;
+		Statement stmt=null;
+		ResultSet rs=null;
+
+		Class.forName("org.postgresql.Driver");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+
+		if(conn!=null)
+		{
+			System.out.println("Connection successful...");
+			stmt=conn.createStatement();
+
+			rs=stmt.executeQuery("SELECT * FROM student");
+			ResultSetMetaData rsmd=rs.getMetaData();
+
+			int columnCount=rsmd.getColumnCount();
+			System.out.println("No of columns:"+columnCount);
+
+			for(int i=1;i<=columnCount;i++)
+			{
+				System.out.println("Column: "+i);
+				System.out.println("Name: "+rsmd.getColumnName(i));
+				System.out.println("Type: "+rsmd.getColumnTypeName(i));
+				System.out.println("Display size: "+rsmd.getColumnDisplaySize(i));
+			}
+		conn.close();
+		}
+		else
+		{
+			System.out.println("Conncetion failed");
+		}
+	}
+}
+
+// CREATE DATABASE tya13;
+// \c tya13
+
+
+==================================================
+JDBC4 - Prepared Statement Example
+==================================================
+import java.sql.*;
+import java.util.Scanner;
+
+public class JDBC4 {
+    private static Connection conn = null;
+    private static PreparedStatement pstmt = null;
+    private static ResultSet rs = null;
+
+    public static void main(String[] args) 
+    {
+        Scanner sc = new Scanner(System.in);
+        
+        try 
+        {
+            // Load driver and establish connection
+            Class.forName("org.postgresql.Driver");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+        
+            
+            if (conn != null) 
+            {
+                System.out.println("Connection successful");
+                
+                int choice;
+                do 
+                {
+                    // Display menu
+                    System.out.println("\nMENU");
+                    System.out.println("1. Insert | 2. Update | 3. Delete | 4. Search | 5. View All | 0. Exit");
+                    System.out.print("Choice: ");
+                    choice = sc.nextInt();
+                    
+                    switch (choice) 
+                    {
+                        case 1: insertRecord(sc); break;
+                        case 2: updateRecord(sc); break;
+                        case 3: deleteRecord(sc); break;
+                        case 4: searchRecord(sc); break;
+                        case 5: viewAllRecords(); break;
+                        case 0: System.out.println("Exiting..."); break;
+                        default: System.out.println("Invalid choice");
+                    }
+                } 
+                while (choice != 0);
+            } 
+            else
+             {
+                System.out.println("Connection failed");
+            }
+        } 
+        catch (Exception e)
+         {
+            System.out.println("Error: " + e.getMessage());
+        }
+         finally
+          {
+            try 
+            {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+              
+            }
+             catch (SQLException e)
+              {
+                System.out.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
+    
+    private static void insertRecord(Scanner sc) throws SQLException
+     {
+        System.out.print("Enter roll number, name, percentage: ");
+        int roll = sc.nextInt();
+        sc.nextLine();
+        String name = sc.nextLine();
+        double percentage = sc.nextDouble();
+        
+     pstmt = conn.prepareStatement("INSERT INTO student (rollno, name, percentage) VALUES(?, ?, ?)");
+
+        pstmt.setInt(1, roll);
+        pstmt.setString(2, name);
+        pstmt.setDouble(3, percentage);
+        
+        int result = pstmt.executeUpdate();
+        System.out.println(result > 0 ? "Record inserted" : "Insert failed");
+    }
+    
+    private static void updateRecord(Scanner sc) throws SQLException {
+        System.out.print("Enter roll to update, new name, new percentage: ");
+        int roll = sc.nextInt();
+        sc.nextLine();
+        String name = sc.nextLine();
+        double percentage = sc.nextDouble();
+        
+        pstmt = conn.prepareStatement("UPDATE student SET name=?, percentage=? WHERE rollno=?");
+        pstmt.setString(1, name);
+        pstmt.setDouble(2, percentage);
+        pstmt.setInt(3, roll);
+        
+        int result = pstmt.executeUpdate();
+        System.out.println(result > 0 ? "Record updated" : "Update failed");
+    }
+    
+    private static void deleteRecord(Scanner sc) throws SQLException
+     {
+        System.out.print("Enter roll to delete: ");
+        int roll = sc.nextInt();
+        
+        pstmt = conn.prepareStatement("DELETE FROM student WHERE rollno=?");
+        pstmt.setInt(1, roll);
+        
+        int result = pstmt.executeUpdate();
+        System.out.println(result > 0 ? "Record deleted" : "Delete failed");
+    }
+    
+    private static void searchRecord(Scanner sc) throws SQLException
+     {
+        System.out.print("Enter roll to search: ");
+        int roll = sc.nextInt();
+        
+        pstmt = conn.prepareStatement("SELECT * FROM student WHERE rollno=?");
+        pstmt.setInt(1, roll);
+        rs = pstmt.executeQuery();
+        
+        if (rs.next())
+         {
+            System.out.printf("Roll: %d | Name: %s | Percentage: %.2f\n", 
+                rs.getInt("rollno"), rs.getString("name"), rs.getDouble("percentage"));
+        }
+         else
+          {
+            System.out.println("Record not found");
+        }
+    }
+    
+    private static void viewAllRecords() throws SQLException 
+    {
+        pstmt = conn.prepareStatement("SELECT * FROM student");
+        rs = pstmt.executeQuery();
+        
+        System.out.println("\nRoll\tName\t\tPercentage");
+      
+        
+        while (rs.next())
+         {
+            System.out.printf("%d\t%-15s\t%.2f\n", 
+                rs.getInt("rollno"), rs.getString("name"), rs.getDouble("percentage"));
+        }
+     
+    }
+    
+} 
+
+
+
+// CREATE DATABASE tya13;
+// \c tya13
+
+// CREATE TABLE student (
+//     rollno INT PRIMARY KEY,
+//     name VARCHAR(100) NOT NULL,
+//     percentage DECIMAL(5,2) NOT NULL
+// );
+
+
+==================================================
+JDBC5 - Phone Book Application
+==================================================
+
+import java.awt.event.*;
+import java.sql.*;
+import javax.swing.*;
+
+public class JDBC5 extends JFrame implements ActionListener
+ {
+    JLabel jl1, jl2, jl3, jl4, jl5, hl;
+    JTextField jt1, jt2, jt3, jt4, jt5;
+    JButton b1, b2, b3, b4, b5, b6;
+
+    Connection conn;
+    PreparedStatement pstmt;
+    ResultSet rs;
+
+    public JDBC5()
+    {
+        setLayout(null);
+
+        hl = new JLabel("Phone-Book");
+        hl.setSize(100, 30);
+        hl.setLocation(230, 2);
+        add(hl);
+
+        jl1 = new JLabel("ID");
+        jl1.setSize(100, 30);
+        jl1.setLocation(30, 30);
+        add(jl1);
+        jt1 = new JTextField();
+        jt1.setSize(350, 30);
+        jt1.setLocation(140, 30);
+        add(jt1);
+
+        jl2 = new JLabel("Name");
+        jl2.setSize(100, 30);
+        jl2.setLocation(30, 70);
+        add(jl2);
+        jt2 = new JTextField();
+        jt2.setSize(350, 30);
+        jt2.setLocation(140, 70);
+        add(jt2);
+
+        jl3 = new JLabel("Address");
+        jl3.setSize(100, 30);
+        jl3.setLocation(30, 110);
+        add(jl3);
+        jt3 = new JTextField();
+        jt3.setSize(350, 30);
+        jt3.setLocation(140, 110);
+        add(jt3);
+
+        jl4 = new JLabel("Phone");
+        jl4.setSize(100, 30);
+        jl4.setLocation(30, 150);
+        add(jl4);
+        jt4 = new JTextField();
+        jt4.setSize(350, 30);
+        jt4.setLocation(140, 150);
+        add(jt4);
+
+        jl5 = new JLabel("Email");
+        jl5.setSize(100, 30);
+        jl5.setLocation(30, 190);
+        add(jl5);
+        jt5 = new JTextField();
+        jt5.setSize(350, 30);
+        jt5.setLocation(140, 190);
+        add(jt5);
+
+        b1 = new JButton("<<");
+        b1.setSize(100, 30);
+        b1.setLocation(30, 230);
+        add(b1);
+        b1.addActionListener(this);
+
+        b2 = new JButton("DELETE");
+        b2.setSize(100, 30);
+        b2.setLocation(140, 230);
+        add(b2);
+        b2.addActionListener(this);
+
+        b3 = new JButton("UPDATE");
+        b3.setSize(100, 30);
+        b3.setLocation(250, 230);
+        add(b3);
+        b3.addActionListener(this);
+
+        b6 = new JButton("SAVE");
+        b6.setSize(70, 30);
+        b6.setLocation(270, 270);
+        b6.setEnabled(false);
+        add(b6);
+        b6.addActionListener(this);
+
+        b4 = new JButton(">>");
+        b4.setSize(100, 30);
+        b4.setLocation(360, 230);
+        add(b4);
+        b4.addActionListener(this);
+
+        b5 = new JButton("EXIT");
+        b5.setSize(100, 30);
+        b5.setLocation(470, 230);
+        add(b5);
+        b5.addActionListener(this);
+
+        setTitle("Phone Book");
+        setSize(600, 350);
+        setLocation(170, 100);
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        try
+         {
+            Class.forName("org.postgresql.Driver");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+        } 
+        catch (Exception e) 
+        {
+            JOptionPane.showMessageDialog(this, "Database Connection Failed!");
+        }
+    }
+
+    public void actionPerformed(ActionEvent ae)
+     {
+        if (ae.getSource() == b1) {
+            fetchPreviousRecord();
+        } else if (ae.getSource() == b2) {
+            deleteRecord();
+        } else if (ae.getSource() == b3) {
+            b6.setEnabled(true);
+        } else if (ae.getSource() == b6) {
+            saveUpdateRecord();
+        } else if (ae.getSource() == b4) {
+            fetchNextRecord();
+        } else if (ae.getSource() == b5) {
+            System.exit(0);
+        }
+    }
+
+    public void fetchPreviousRecord()
+     {
+        try
+         {
+            int id = Integer.parseInt(jt1.getText());
+            pstmt = conn.prepareStatement("SELECT * FROM phonebook WHERE id < ? ORDER BY id DESC LIMIT 1");
+            pstmt.setInt(1, id);
+            rs = pstmt.executeQuery();
+            if (rs.next()) 
+            {
+                displayRecord(rs);
+                b6.setEnabled(false);
+            }
+             else
+              {
+                JOptionPane.showMessageDialog(this, "No previous record");
+            }
+        } 
+        catch (Exception e)
+         {
+            // Error handling
+        }
+    }
+
+    public void fetchNextRecord() 
+    {
+        try 
+        {
+            int id = Integer.parseInt(jt1.getText());
+            pstmt = conn.prepareStatement("SELECT * FROM phonebook WHERE id > ? ORDER BY id ASC LIMIT 1");
+            pstmt.setInt(1, id);
+            rs = pstmt.executeQuery();
+            if (rs.next())
+             {
+                displayRecord(rs);
+                b6.setEnabled(false);
+            }
+             else
+              {
+                JOptionPane.showMessageDialog(this, "No next record");
+            }
+        } 
+        catch (Exception e)
+         {
+            // Error handling
+        }
+    }
+
+    public void deleteRecord()
+     {
+        try
+         {
+            int id = Integer.parseInt(jt1.getText());
+            pstmt = conn.prepareStatement("DELETE FROM phonebook WHERE id = ?");
+            pstmt.setInt(1, id);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0)
+             {
+                JOptionPane.showMessageDialog(this, "Record deleted");
+                clearFields();
+            }
+        }
+         catch (Exception e) 
+         {
+            // Error handling
+        }
+    }
+
+    public void saveUpdateRecord()
+     {
+        try {
+            int id = Integer.parseInt(jt1.getText());
+            String name = jt2.getText().trim();
+            String address = jt3.getText().trim();
+            long phone = Long.parseLong(jt4.getText().trim());
+            String email = jt5.getText().trim();
+
+            pstmt = conn.prepareStatement("UPDATE phonebook SET name=?, address=?, phone=?, email=? WHERE id=?");
+            pstmt.setString(1, name);
+            pstmt.setString(2, address);
+            pstmt.setLong(3, phone);
+            pstmt.setString(4, email);
+            pstmt.setInt(5, id);
+
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) 
+            {
+                JOptionPane.showMessageDialog(this, "Record updated");
+                b6.setEnabled(false);
+            }
+        } catch (Exception e)
+         {
+            // Error handling
+        }
+    }
+
+    public void displayRecord(ResultSet rs) throws SQLException
+     {
+        jt1.setText(String.valueOf(rs.getInt("id")));
+        jt2.setText(rs.getString("name"));
+        jt3.setText(rs.getString("address"));
+        jt4.setText(rs.getString("phone"));
+        jt5.setText(rs.getString("email"));
+    }
+
+    public void clearFields()
+     {
+        jt1.setText("");
+        jt2.setText("");
+        jt3.setText("");
+        jt4.setText("");
+        jt5.setText("");
+    }
+
+    public static void main(String[] args)
+     {
+        new JDBC5();
+    }
+}
+
+/* CREATE TABLE phonebook (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    address TEXT,
+    phone BIGINT UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL
+); */
+
+
+==================================================
+JDBC6 - Course & Student Management System
+==================================================
+
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+import javax.swing.*;
+
+public class JDBC6 extends JFrame implements ActionListener
+ {
+    JTextField courseNameField, instructorField, studentNameField, searchField;
+    JTextArea displayArea;
+    JButton addCourseBtn, addStudentBtn, deleteStudentBtn, viewStudentsBtn, searchStudentBtn;
+    Connection conn;
+    PreparedStatement pstmt;
+    ResultSet rs;
+
+    public JDBC6() 
+    {
+        setTitle("Course & Student Management");
+        setSize(500, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(7, 2));
+
+        // UI Components
+        add(new JLabel("Course Name:"));
+        courseNameField = new JTextField();
+        add(courseNameField);
+
+        add(new JLabel("Instructor:"));
+        instructorField = new JTextField();
+        add(instructorField);
+
+        addCourseBtn = new JButton("Add Course");
+        addCourseBtn.addActionListener(this);
+        add(addCourseBtn);
+
+        add(new JLabel("Student Name:"));
+        studentNameField = new JTextField();
+        add(studentNameField);
+
+        addStudentBtn = new JButton("Add Student");
+        addStudentBtn.addActionListener(this);
+        add(addStudentBtn);
+
+        deleteStudentBtn = new JButton("Delete Student");
+        deleteStudentBtn.addActionListener(this);
+        add(deleteStudentBtn);
+
+        viewStudentsBtn = new JButton("View All Students");
+        viewStudentsBtn.addActionListener(this);
+        add(viewStudentsBtn);
+
+        add(new JLabel("Search Student:"));
+        searchField = new JTextField();
+        add(searchField);
+
+        searchStudentBtn = new JButton("Search");
+        searchStudentBtn.addActionListener(this);
+        add(searchStudentBtn);
+
+        displayArea = new JTextArea();
+        add(new JScrollPane(displayArea));
+
+        // Connect to Database
+        connectDatabase();
+        
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void connectDatabase() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+            createTables();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Database Connection Failed!");
+        }
+    }
+    
+    private void createTables() {
+        try {
+            Statement stmt = conn.createStatement();
+            
+            // Create Course table
+            stmt.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS Course (" +
+                "id SERIAL PRIMARY KEY, " +
+                "name VARCHAR(100) NOT NULL, " +
+                "instructor VARCHAR(100) NOT NULL)"
+            );
+            
+            // Create Student table
+            stmt.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS Student (" +
+                "id SERIAL PRIMARY KEY, " +
+                "name VARCHAR(100) NOT NULL)"
+            );
+            
+            // Create Enrollment junction table for many-to-many relationship
+            stmt.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS Enrollment (" +
+                "student_id INT REFERENCES Student(id) ON DELETE CASCADE, " +
+                "course_id INT REFERENCES Course(id) ON DELETE CASCADE, " +
+                "PRIMARY KEY (student_id, course_id))"
+            );
+            
+            stmt.close();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error creating tables: " + e.getMessage());
+        }
+    }
+
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == addCourseBtn) {
+            addCourse();
+        } else if (ae.getSource() == addStudentBtn) {
+            addStudent();
+        } else if (ae.getSource() == deleteStudentBtn) {
+            deleteStudent();
+        } else if (ae.getSource() == viewStudentsBtn) {
+            viewAllStudents();
+        } else if (ae.getSource() == searchStudentBtn) {
+            searchStudent();
+        }
+    }
+
+    private void addCourse() {
+        try {
+            String name = courseNameField.getText().trim();
+            String instructor = instructorField.getText().trim();
+            
+            if (name.isEmpty() || instructor.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill all fields");
+                return;
+            }
+            
+            pstmt = conn.prepareStatement("INSERT INTO Course (name, instructor) VALUES (?, ?)");
+            pstmt.setString(1, name);
+            pstmt.setString(2, instructor);
+            
+            int result = pstmt.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Course Added Successfully!");
+                clearFields(courseNameField, instructorField);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Adding Course: " + e.getMessage());
+        }
+    }
+
+    private void addStudent() {
+        try {
+            String name = studentNameField.getText().trim();
+            
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter student name");
+                return;
+            }
+            
+            pstmt = conn.prepareStatement("INSERT INTO Student (name) VALUES (?)");
+            pstmt.setString(1, name);
+            
+            int result = pstmt.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Student Added Successfully!");
+                clearFields(studentNameField);
+                viewAllStudents();
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Adding Student: " + e.getMessage());
+        }
+    }
+
+    private void deleteStudent() {
+        try {
+            String name = studentNameField.getText().trim();
+            
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter student name");
+                return;
+            }
+            
+            // First delete from junction table
+            pstmt = conn.prepareStatement("DELETE FROM Enrollment WHERE student_id IN (SELECT id FROM Student WHERE name = ?)");
+            pstmt.setString(1, name);
+            pstmt.executeUpdate();
+            
+            // Then delete from Student table
+            pstmt = conn.prepareStatement("DELETE FROM Student WHERE name = ?");
+            pstmt.setString(1, name);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Student Deleted Successfully!");
+                clearFields(studentNameField);
+                viewAllStudents();
+            } else {
+                JOptionPane.showMessageDialog(this, "Student Not Found!");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Deleting Student: " + e.getMessage());
+        }
+    }
+
+    private void viewAllStudents() {
+        try {
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM Student ORDER BY id");
+            
+            displayArea.setText("Students:\n");
+            
+            while (rs.next()) {
+                displayArea.append(rs.getInt("id") + " - " + rs.getString("name") + "\n");
+            }
+            
+            if (displayArea.getText().equals("Students:\n")) {
+                displayArea.append("No students found.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Fetching Students: " + e.getMessage());
+        }
+    }
+
+    private void searchStudent() {
+        try {
+            String name = searchField.getText().trim();
+            
+            if (name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter search term");
+                return;
+            }
+            
+            pstmt = conn.prepareStatement("SELECT * FROM Student WHERE name LIKE ? ORDER BY id");
+            pstmt.setString(1, "%" + name + "%");
+            
+            rs = pstmt.executeQuery();
+            
+            displayArea.setText("Search Results:\n");
+            
+            while (rs.next()) {
+                displayArea.append(rs.getInt("id") + " - " + rs.getString("name") + "\n");
+            }
+            
+            if (displayArea.getText().equals("Search Results:\n")) {
+                displayArea.append("No matching students found.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Searching Student: " + e.getMessage());
+        }
+    }
+    
+    private void clearFields(JTextField... fields) {
+        for (JTextField field : fields) {
+            field.setText("");
+        }
+    }
+
+    public static void main(String[] args) {
+        new JDBC6();
+    }
+}
+
+/* CREATE TABLE Course (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    instructor VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Student (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Enrollment (
+    student_id INT REFERENCES Student(id) ON DELETE CASCADE,
+    course_id INT REFERENCES Course(id) ON DELETE CASCADE,
+    PRIMARY KEY (student_id, course_id)
+); */
+
+
+==================================================
+JDBC7 - Advanced Database Operations Example
+==================================================
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.*;
+
+public class JDBC7 extends JFrame implements ActionListener {
+    JTextField nameField, phoneField, callsField, monthField, yearField, searchField;
+    JTextArea displayArea;
+    JButton addUserBtn, searchUserBtn, calculateBillBtn;
+    Connection conn;
+    PreparedStatement pstmt;
+    ResultSet rs;
+
+    public JDBC7() {
+        setTitle("Telephone Billing System");
+        setSize(600, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(8, 2));
+
+        // UI Components
+        add(new JLabel("Name:"));
+        nameField = new JTextField();
+        add(nameField);
+
+        add(new JLabel("Phone Number:"));
+        phoneField = new JTextField();
+        add(phoneField);
+
+        add(new JLabel("Number of Calls:"));
+        callsField = new JTextField();
+        add(callsField);
+
+        add(new JLabel("Month:"));
+        monthField = new JTextField();
+        add(monthField);
+
+        add(new JLabel("Year:"));
+        yearField = new JTextField();
+        add(yearField);
+
+        addUserBtn = new JButton("Add User");
+        addUserBtn.addActionListener(this);
+        add(addUserBtn);
+
+        add(new JLabel("Search by Name/Phone:"));
+        searchField = new JTextField();
+        add(searchField);
+
+        searchUserBtn = new JButton("Search User");
+        searchUserBtn.addActionListener(this);
+        add(searchUserBtn);
+
+        calculateBillBtn = new JButton("Calculate Bill");
+        calculateBillBtn.addActionListener(this);
+        add(calculateBillBtn);
+
+        displayArea = new JTextArea();
+        add(new JScrollPane(displayArea));
+
+        connectDatabase();
+        
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void connectDatabase() {
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Database Connection Failed!");
+        }
+    }
+
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == addUserBtn) {
+            addUser();
+        } else if (ae.getSource() == searchUserBtn) {
+            searchUser();
+        } else if (ae.getSource() == calculateBillBtn) {
+            calculateBill();
+        }
+    }
+
+    private void addUser() {
+        try {
+            String name = nameField.getText().trim();
+            String phone = phoneField.getText().trim();
+            String calls = callsField.getText().trim();
+            String month = monthField.getText().trim();
+            String year = yearField.getText().trim();
+
+            if (name.isEmpty() || phone.isEmpty() || calls.isEmpty() || month.isEmpty() || year.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill all fields!");
+                return;
+            }
+
+            int numCalls = Integer.parseInt(calls);
+            int yearValue = Integer.parseInt(year);
+
+            pstmt = conn.prepareStatement("INSERT INTO TelephoneUser (name, phone, calls, month, year) VALUES (?, ?, ?, ?, ?)");
+            pstmt.setString(1, name);
+            pstmt.setString(2, phone);
+            pstmt.setInt(3, numCalls);
+            pstmt.setString(4, month);
+            pstmt.setInt(5, yearValue);
+
+            int result = pstmt.executeUpdate();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "User Added Successfully!");
+                clearFields(nameField, phoneField, callsField, monthField, yearField);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Adding User: " + e.getMessage());
+        }
+    }
+
+    private void searchUser() {
+        try {
+            String query = searchField.getText().trim();
+            
+            if (query.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a name or phone number!");
+                return;
+            }
+
+            pstmt = conn.prepareStatement("SELECT * FROM TelephoneUser WHERE name LIKE ? OR phone LIKE ?");
+            pstmt.setString(1, "%" + query + "%");
+            pstmt.setString(2, "%" + query + "%");
+
+            rs = pstmt.executeQuery();
+            displayArea.setText("Search Results:\n");
+
+            while (rs.next()) {
+                displayArea.append("ID: " + rs.getInt("id") +
+                        ", Name: " + rs.getString("name") +
+                        ", Phone: " + rs.getString("phone") +
+                        ", Calls: " + rs.getInt("calls") +
+                        ", Month: " + rs.getString("month") +
+                        ", Year: " + rs.getInt("year") + "\n");
+            }
+
+            if (displayArea.getText().equals("Search Results:\n")) {
+                displayArea.append("No matching records found.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Searching User: " + e.getMessage());
+        }
+    }
+
+    private void calculateBill() {
+        try {
+            String query = searchField.getText().trim();
+            
+            if (query.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a name or phone number!");
+                return;
+            }
+
+            pstmt = conn.prepareStatement("SELECT * FROM TelephoneUser WHERE name LIKE ? OR phone LIKE ?");
+            pstmt.setString(1, "%" + query + "%");
+            pstmt.setString(2, "%" + query + "%");
+
+            rs = pstmt.executeQuery();
+            displayArea.setText("Bill Details:\n");
+
+            while (rs.next()) {
+                int calls = rs.getInt("calls");
+                double totalBill = calculateTotalBill(calls);
+
+                displayArea.append("ID: " + rs.getInt("id") +
+                        ", Name: " + rs.getString("name") +
+                        ", Phone: " + rs.getString("phone") +
+                        ", Calls: " + calls +
+                        ", Month: " + rs.getString("month") +
+                        ", Year: " + rs.getInt("year") +
+                        ", Bill: Rs. " + totalBill + "\n");
+            }
+
+            if (displayArea.getText().equals("Bill Details:\n")) {
+                displayArea.append("No records found.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error Calculating Bill: " + e.getMessage());
+        }
+    }
+
+    private double calculateTotalBill(int calls) {
+        double rent = 300;
+        double cost = 0;
+
+        if (calls > 100 && calls <= 500) {
+            cost = (calls - 100) * 1.00;
+        } else if (calls > 500) {
+            cost = (400 * 1.00) + ((calls - 500) * 1.30);
+        }
+
+        return rent + cost;
+    }
+
+    private void clearFields(JTextField... fields) {
+        for (JTextField field : fields) {
+            field.setText("");
+        }
+    }
+
+    public static void main(String[] args) {
+        new JDBC7();
+    }
+}
+
+
+// CREATE DATABASE tya13;
+// \c tya13
+
+
+// CREATE TABLE TelephoneUser (
+//     id SERIAL PRIMARY KEY,
+//     name VARCHAR(100) NOT NULL,
+//     phone VARCHAR(15) UNIQUE NOT NULL,
+//     calls INT NOT NULL,
+//     month VARCHAR(20) NOT NULL,
+//     year INT NOT NULL
+// );
+===========================================================
