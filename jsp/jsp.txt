@@ -1,0 +1,274 @@
+==================== greetUser.jsp ====================
+
+<%@ page import="java.util.Calendar" %>
+<html>
+<head>
+    <title>Greeting User</title>
+</head>
+<body>
+
+    <h2>Enter Your Name</h2>
+    <form method="get">
+        <input type="text" name="username" placeholder="Enter your name" required>
+        <input type="submit" value="Submit">
+    </form>
+
+    <h2>Greeting Message:</h2>
+    <%
+        String username = request.getParameter("username");
+        if (username != null && !username.trim().isEmpty()) {
+            // Get the current hour
+            Calendar cal = Calendar.getInstance();
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            String greeting;
+
+            // Determine greeting based on the hour
+            if (hour >= 5 && hour < 12) {
+                greeting = "Good Morning";
+            } else if (hour >= 12 && hour < 17) {
+                greeting = "Good Afternoon";
+            } else {
+                greeting = "Good Evening";
+            }
+
+            // Display the greeting message
+            out.println("<h3>" + greeting + " " + username + "!</h3>");
+        }
+    %>
+
+</body>
+</html>
+
+==================== implicitObjects.jsp ====================
+
+<%@ page import="java.util.*, java.text.SimpleDateFormat" %>
+<%@ page import="javax.servlet.http.Cookie" %>
+
+<html>
+<head>
+    <title>JSP Implicit Objects Demo</title>
+</head>
+<body>
+
+    <h2>JSP Implicit Objects Demo</h2>
+
+    <!-- Using 'out' to display current date and time -->
+    <h3>Current Date and Time:</h3>
+    <%
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        out.println(formatter.format(date));
+    %>
+
+    <!-- Using 'request' to get header information -->
+    <h3>Request Headers:</h3>
+    <%
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            out.println(headerName + " : " + request.getHeader(headerName) + "<br>");
+        }
+    %>
+
+    <!-- Using 'response' to add a cookie -->
+    <h3>Adding a Cookie:</h3>
+    <%
+        Cookie cookie = new Cookie("User", "JSP Learner");
+        response.addCookie(cookie);
+        out.println("Cookie 'User' with value 'JSP Learner' has been added.<br>");
+    %>
+
+    <!-- Using 'config' to get <init-param> value -->
+    <h3>Servlet Init Parameter:</h3>
+    <%
+        String configParam = config.getInitParameter("configParam");
+        out.println("Config Parameter Value: " + (configParam != null ? configParam : "Not Found") + "<br>");
+    %>
+
+    <!-- Using 'application' to get <context-param> value -->
+    <h3>Application Context Parameter:</h3>
+    <%
+        String contextParam = application.getInitParameter("contextParam");
+        out.println("Context Parameter Value: " + (contextParam != null ? contextParam : "Not Found") + "<br>");
+    %>
+
+    <!-- Using 'session' to display session ID -->
+    <h3>Session ID:</h3>
+    <%
+        out.println("Session ID: " + session.getId() + "<br>");
+    %>
+
+    <!-- Using 'pageContext' to set and get attributes -->
+    <h3>Using PageContext:</h3>
+    <%
+        pageContext.setAttribute("message", "Hello from PageContext!");
+        out.println("PageContext Attribute Value: " + pageContext.getAttribute("message") + "<br>");
+    %>
+
+    <!-- Using 'page' to get the name of the generated servlet -->
+    <h3>Generated Servlet Class:</h3>
+    <%
+        out.println("Generated Servlet Class Name: " + page.getClass().getName() + "<br>");
+    %>
+
+</body>
+</html>
+
+==================== listFiles.jsp ====================
+
+<%@ page import="java.io.*" %>
+<html>
+<head>
+    <title>File List by Extension</title>
+</head>
+<body>
+    <h2>Enter File Extension</h2>
+    <form method="get">
+        <input type="text" name="ext" placeholder="e.g., txt, jsp, java">
+        <input type="submit" value="Search">
+    </form>
+
+    <h2>Files Found:</h2>
+    <%
+        String ext = request.getParameter("ext");
+        if (ext != null && !ext.trim().isEmpty()) {
+            File directory = new File(application.getRealPath("/"));
+            File[] files = directory.listFiles((dir, name) -> name.endsWith("." + ext));
+
+            if (files != null && files.length > 0) {
+                for (File file : files) {
+                    out.println("<a href='" + file.getName() + "'>" + file.getName() + "</a><br>");
+                }
+            } else {
+                out.println("No files found with extension: " + ext);
+            }
+        }
+    %>
+</body>
+</html>
+
+==================== quiz.jsp ====================
+
+<%@ page import="java.sql.*, java.util.*" %>
+<html>
+<head>
+    <title>Online Quiz</title>
+</head>
+<body>
+
+<%
+   
+    Connection conn = null;
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+        Class.forName("org.postgresql.Driver");
+        conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+
+        // Session Handling
+        Integer index = (Integer) session.getAttribute("index");
+        if (index == null) index = 0;
+
+        Integer score = (Integer) session.getAttribute("score");
+        if (score == null) score = 0;
+
+        List<Integer> questionIDs = (List<Integer>) session.getAttribute("questionIDs");
+        if (questionIDs == null) {
+            questionIDs = new ArrayList<>();
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT id FROM questions");
+            while (rs.next()) {
+                questionIDs.add(rs.getInt("id"));
+            }
+            Collections.shuffle(questionIDs);
+            session.setAttribute("questionIDs", questionIDs);
+        }
+
+        if (index >= questionIDs.size()) 
+        {
+            out.println("<h2>Quiz Completed!</h2>");
+            out.println("<p>Your Score: " + score + "/" + questionIDs.size() + "</p>");
+            out.println("<a href='quiz.jsp'>Try Again</a>");
+            session.invalidate();
+            conn.close();
+            return;
+        }
+
+        
+        int qID = questionIDs.get(index);
+        ps = conn.prepareStatement("SELECT * FROM questions WHERE id=?");
+        ps.setInt(1, qID);
+        rs = ps.executeQuery();
+
+        String question = "";
+        String[] options = new String[4];
+        int correctAnswer = -1;
+        if (rs.next())
+        {
+            question = rs.getString("question");
+            options[0] = rs.getString("option1");
+            options[1] = rs.getString("option2");
+            options[2] = rs.getString("option3");
+            options[3] = rs.getString("option4");
+            correctAnswer = rs.getInt("correct_option");
+        }
+
+        session.setAttribute("correctAnswer", correctAnswer);
+    %>
+
+    <h2>Question <%= index + 1 %></h2>
+    <form action="quiz.jsp" method="post">
+        <p><%= question %></p>
+        <% for (int i = 0; i < 4; i++) { %>
+            <input type="radio" name="answer" value="<%= (i + 1) %>"> <%= options[i] %><br>
+        <% } %>
+        <input type="submit" value="Next">
+    </form>
+
+    <%
+        if ("POST".equalsIgnoreCase(request.getMethod()))
+         {
+            String userAnswer = request.getParameter("answer");
+            if (userAnswer != null && Integer.parseInt(userAnswer) == correctAnswer) 
+            {
+                score++;
+            }
+            session.setAttribute("score", score);
+            session.setAttribute("index", index + 1);
+            response.sendRedirect("quiz.jsp");
+        }
+    } 
+    catch (Exception e) 
+    {
+        out.println("<p>Error: " + e.getMessage() + "</p>");
+    } 
+    finally 
+    {
+        if (rs != null) rs.close();
+        if (ps != null) ps.close();
+        if (conn != null) conn.close();
+    }
+%>
+
+</body>
+</html>
+
+
+
+
+<!-- CREATE TABLE questions (
+    id SERIAL PRIMARY KEY,
+    question TEXT NOT NULL,
+    option1 VARCHAR(255) NOT NULL,
+    option2 VARCHAR(255) NOT NULL,
+    option3 VARCHAR(255) NOT NULL,
+    option4 VARCHAR(255) NOT NULL,
+    correct_option INT NOT NULL
+);
+
+-- Insert Sample Questions
+INSERT INTO questions (question, option1, option2, option3, option4, correct_option) VALUES
+('What is the capital of France?', 'London', 'Berlin', 'Paris', 'Rome', 3),
+('Which programming language is used for Android development?', 'Python', 'Java', 'C++', 'Ruby', 2),
+('Who developed the theory of relativity?', 'Newton', 'Einstein', 'Galileo', 'Tesla', 2); --> 
