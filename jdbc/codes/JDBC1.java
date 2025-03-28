@@ -16,11 +16,11 @@ public class JDBC1
 
         Class.forName("org.postgresql.Driver");
 
-        conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+        conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "examx", "exampasss");
         psInsert = conn.prepareStatement("INSERT INTO student(rollno, name, percentage) VALUES (?, ?, ?)");
 
         if (conn != null)
-				 {
+ {
             System.out.println("Connection successful...");
 
             System.out.print("Enter roll number: ");
