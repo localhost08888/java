@@ -7,7 +7,7 @@ public class collection3
     {
       Hashtable<String,Double> details=new Hashtable<String,Double> ();
 
-      details.put("nilesh",85.5);
+      details.put("nilima",85.5);
       details.put("vishal",75.5);
       details.put("omkar",25.5);
       details.put("jaya",35.5); 
