@@ -5,7 +5,7 @@ public class JDBC2
  {
 		Connection conn=null;
 		Class.forName("org.postgresql.Driver");
-		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","examx","exampasss");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","exampasss");
 
 		if(conn!=null)
 		{
