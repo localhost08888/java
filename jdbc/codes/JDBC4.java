@@ -14,7 +14,7 @@ public class JDBC4 {
         {
             // Load driver and establish connection
             Class.forName("org.postgresql.Driver");
-            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","exampasss");
         
             
             if (conn != null) 
@@ -154,8 +154,8 @@ public class JDBC4 {
 
 
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 
 // CREATE TABLE student (
 //     rollno INT PRIMARY KEY,
@@ -170,7 +170,7 @@ public class JDBC4 {
 //  {
 //     public static void main(String[] args) throws Exception 
 //     {
-//         Connection conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+//         Connection conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx", "examx", "examxpass");
 //         Scanner sc = new Scanner(System.in);
 
 //         while (true)
