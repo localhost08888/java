@@ -1,6 +1,5 @@
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+ import java.awt.*;
+import java.awt.event.*;
 import java.util.Hashtable;
 import javax.swing.*;
 
@@ -8,97 +7,82 @@ public class collection4 extends JFrame implements ActionListener
  {
     JTextField txtname, txtstd;
     JButton btnadd, btndelete, btnsearch;
-    JPanel p1;
-
     Hashtable<String, String> table = new Hashtable<>();
+
     collection4()
      {
         setTitle("City STD Code Information");
-        setSize(700, 500);
-        setVisible(true);
-
-        setLayout(new GridLayout(3, 2, 20, 20));
+        setSize(400, 200);
+        setLayout(new GridLayout(3, 2, 10, 10));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JLabel name = new JLabel("Enter City Name: ");
-        add(name);
-        txtname = new JTextField(10);
+        add(new JLabel("Enter City Name:"));
+        txtname = new JTextField();
         add(txtname);
 
-        JLabel stdcode = new JLabel("Enter STD Code: ");
-        add(stdcode);
-        txtstd = new JTextField(10);
+        add(new JLabel("Enter STD Code:"));
+        txtstd = new JTextField();
         add(txtstd);
 
-        JLabel op = new JLabel("Choose Operation: ");
-        add(op);
-
-        p1 = new JPanel();
-        p1.setLayout(new GridLayout(1, 3, 5, 5));
-
+        JPanel p1 = new JPanel(new GridLayout(1, 3, 5, 5));
         btnadd = new JButton("Add");
-        p1.add(btnadd);
         btnadd.addActionListener(this);
+        p1.add(btnadd);
+        
         btndelete = new JButton("Delete");
-        p1.add(btndelete);
         btndelete.addActionListener(this);
+        p1.add(btndelete);
+        
         btnsearch = new JButton("Search");
-        p1.add(btnsearch);
         btnsearch.addActionListener(this);
+        p1.add(btnsearch);
+        
         add(p1);
-
+        setVisible(true);
     }
+
     @Override
     public void actionPerformed(ActionEvent ae)
      {
         String name = txtname.getText().trim();
         String std = txtstd.getText().trim();
+
         if (ae.getSource() == btnadd)
          {
-               if (name.isEmpty() || std.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Fields cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-               }
-               if (table.containsKey(name) || table.containsValue(std)) 
+               if (name.isEmpty() || std.isEmpty() || table.containsKey(name))
                {
-                JOptionPane.showMessageDialog(null,"Duplicates are not allowed", "Error", JOptionPane.ERROR_MESSAGE);
+                  JOptionPane.showMessageDialog(this, "Invalid input or duplicate entry", "Error", JOptionPane.ERROR_MESSAGE);
                } 
-            else
-             {
-                table.put(name, std);
-                JOptionPane.showMessageDialog(null, "Successfully Added City & STD Code", name,
-                        JOptionPane.INFORMATION_MESSAGE);
-              }
-            txtname.setText("");
-            txtstd.setText("");
-        }
-        if (ae.getSource() == btndelete) 
-        {
-           String s1 = JOptionPane.showInputDialog(null, "Enter City to remove");
-           if (s1 != null && table.containsKey(s1)) {
-            table.remove(s1);
-            JOptionPane.showMessageDialog(null, "Successfully removed City & STD Code", "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-           } else {
-            JOptionPane.showMessageDialog(null, "City not found", "Error", JOptionPane.ERROR_MESSAGE);
-           }
-        }
-        if (ae.getSource() == btnsearch)
+               else 
+               {
+                  table.put(name, std);
+                  JOptionPane.showMessageDialog(this, "Successfully Added", "Success", JOptionPane.INFORMATION_MESSAGE);
+                  txtname.setText("");
+                  txtstd.setText("");
+               }
+        } 
+        else if (ae.getSource() == btndelete)
          {
-            String s1 = JOptionPane.showInputDialog(null, "Enter City");
-            if (s1 != null && table.containsKey(s1))
-             {
-                String s2 = "STD Code: " + table.get(s1);
-                JOptionPane.showMessageDialog(null, s2);
+            String city = JOptionPane.showInputDialog(this, "Enter City to remove");
+            if (table.remove(city) != null) 
+            {
+                JOptionPane.showMessageDialog(this, "City Removed", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
              else 
              {
-                JOptionPane.showMessageDialog(null, "City not found", "Error", JOptionPane.ERROR_MESSAGE);
-           }
+                JOptionPane.showMessageDialog(this, "City not found", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } 
+        else if (ae.getSource() == btnsearch) 
+        {
+            String city = JOptionPane.showInputDialog(this, "Enter City");
+            String code = table.get(city);
+            JOptionPane.showMessageDialog(this, code != null ? "STD Code: " + code : "City not found", "Result", JOptionPane.INFORMATION_MESSAGE);
         }
     }
-   public static void main(String[] args) 
-   {
+
+    public static void main(String[] args)
+     {
         new collection4();
     }
-} 
+}
