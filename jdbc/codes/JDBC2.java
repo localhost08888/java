@@ -5,7 +5,7 @@ public class JDBC2
  {
 		Connection conn=null;
 		Class.forName("org.postgresql.Driver");
-		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","examx","exampasss");
 
 		if(conn!=null)
 		{
@@ -32,8 +32,8 @@ public class JDBC2
 	}
 }
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 //  CREATE TABLE users 
 // (
 //     id SERIAL PRIMARY KEY,
