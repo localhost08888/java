@@ -38,5 +38,13 @@ public class JDBC3
 	}
 }
 
-// CREATE DATABASE tya13;
-// \c tya13
+CREATE DATABASE tya13;
+\c tya13
+ CREATE TABLE users 
+(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+ );
