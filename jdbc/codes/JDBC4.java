@@ -162,3 +162,99 @@ public class JDBC4 {
 //     name VARCHAR(100) NOT NULL,
 //     percentage DECIMAL(5,2) NOT NULL
 // );
+======another one -------
+// import java.sql.*;
+// import java.util.Scanner;
+
+// public class JDBC4
+//  {
+//     public static void main(String[] args) throws Exception 
+//     {
+//         Connection conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+//         Scanner sc = new Scanner(System.in);
+
+//         while (true)
+//         {
+//             System.out.println("\nMENU: 1. Insert 2. Modify 3. Delete 4. Search 5. View All 6. Exit");
+//             System.out.print("Choice: ");
+//             int choice = sc.nextInt();
+//             if (choice == 6) break;
+
+//             switch (choice)
+//              {
+//                 case 1:
+//                     System.out.print("Enter roll, name, percentage: ");
+//                     try (PreparedStatement pstmt = conn.prepareStatement("INSERT INTO student VALUES(?, ?, ?)"))
+//                      {
+//                         pstmt.setInt(1, sc.nextInt());
+//                         sc.nextLine();
+//                         pstmt.setString(2, sc.nextLine());
+//                         pstmt.setDouble(3, sc.nextDouble());
+//                         pstmt.executeUpdate();
+//                         System.out.println("Record inserted.");
+//                     }
+//                     break;
+
+//                 case 2:
+//                     System.out.print("Enter roll to update, new name, new percentage: ");
+//                     try (PreparedStatement pstmt = conn.prepareStatement("UPDATE student SET name=?, percentage=? WHERE rollno=?"))
+//                      {
+//                         pstmt.setString(1, sc.next());
+//                         pstmt.setDouble(2, sc.nextDouble());
+//                         pstmt.setInt(3, sc.nextInt());
+//                         pstmt.executeUpdate();
+//                         System.out.println("Record updated.");
+//                     }
+//                     break;
+
+//                 case 3:
+//                     System.out.print("Enter roll to delete: ");
+//                     try (PreparedStatement pstmt = conn.prepareStatement("DELETE FROM student WHERE rollno=?")) 
+//                     {
+//                         pstmt.setInt(1, sc.nextInt());
+//                         pstmt.executeUpdate();
+//                         System.out.println("Record deleted.");
+//                     }
+//                     break;
+
+//                 case 4:
+//                     System.out.print("Enter roll to search: ");
+//                     try (PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM student WHERE rollno=?"))
+//                      {
+//                         pstmt.setInt(1, sc.nextInt());
+//                         try (ResultSet rs = pstmt.executeQuery()) 
+//                         {
+//                             if (rs.next())
+//                              {
+//                                 System.out.printf("Roll: %d | Name: %s | Percentage: %.2f\n", 
+//                                     rs.getInt(1), rs.getString(2), rs.getDouble(3));
+//                              } 
+//                             else
+//                              {
+//                                 System.out.println("Record not found.");
+//                             }
+//                         }
+//                     }
+//                     break;
+
+//                 case 5:
+//                     try (PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM student");
+//                          ResultSet rs = pstmt.executeQuery()) 
+//                          {
+//                         System.out.println("\nRoll\tName\tPercentage");
+//                         while (rs.next()) 
+//                         {
+//                             System.out.printf("%d\t%s\t%.2f\n", rs.getInt(1), rs.getString(2), rs.getDouble(3));
+//                         }
+//                     }
+//                     break;
+
+//                 default:
+//                     System.out.println("Invalid choice.");
+//             }
+//         }
+        
+//         conn.close();
+//         sc.close();
+//     }
+// }
