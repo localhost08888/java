@@ -19,7 +19,7 @@ public class JDBC1
 
         Class.forName("org.postgresql.Driver");
 
-        conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+        conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx", "examx", "examxpass");
         psInsert = conn.prepareStatement("INSERT INTO student(rollno, name, percentage) VALUES (?, ?, ?)");
 
         if (conn != null)
@@ -94,7 +94,7 @@ public class JDBC2
  {
 		Connection conn=null;
 		Class.forName("org.postgresql.Driver");
-		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","examxpass");
 
 		if(conn!=null)
 		{
@@ -121,8 +121,8 @@ public class JDBC2
 	}
 }
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 //  CREATE TABLE users 
 // (
 //     id SERIAL PRIMARY KEY,
@@ -148,7 +148,7 @@ public class JDBC3
 		ResultSet rs=null;
 
 		Class.forName("org.postgresql.Driver");
-		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","examxpass");
 
 		if(conn!=null)
 		{
@@ -177,8 +177,8 @@ public class JDBC3
 	}
 }
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 
 
 ==================================================
@@ -200,7 +200,7 @@ public class JDBC4 {
         {
             // Load driver and establish connection
             Class.forName("org.postgresql.Driver");
-            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","examxpass");
         
             
             if (conn != null) 
@@ -340,8 +340,8 @@ public class JDBC4 {
 
 
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 
 // CREATE TABLE student (
 //     rollno INT PRIMARY KEY,
@@ -468,7 +468,7 @@ public class JDBC5 extends JFrame implements ActionListener
         try
          {
             Class.forName("org.postgresql.Driver");
-            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","examxpass");
         } 
         catch (Exception e) 
         {
@@ -697,7 +697,7 @@ public class JDBC6 extends JFrame implements ActionListener
     private void connectDatabase() {
         try {
             Class.forName("org.postgresql.Driver");
-            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+            conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","examxpass");
             createTables();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Database Connection Failed!");
@@ -976,7 +976,7 @@ public class JDBC7 extends JFrame implements ActionListener {
     private void connectDatabase() {
         try {
             Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+            conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx", "examx", "examxpass");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Database Connection Failed!");
         }
@@ -1120,8 +1120,8 @@ public class JDBC7 extends JFrame implements ActionListener {
 }
 
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 
 
 // CREATE TABLE TelephoneUser (
