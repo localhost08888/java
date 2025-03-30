@@ -210,8 +210,8 @@ public class JDBC7 extends JFrame implements ActionListener {
 }
 
 
-// CREATE DATABASE tya13;
-// \c tya13
+// CREATE DATABASE examx;
+// \c examx
 
 
 // CREATE TABLE TelephoneUser (
