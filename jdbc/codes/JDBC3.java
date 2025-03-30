@@ -9,7 +9,7 @@ public class JDBC3
 		ResultSet rs=null;
 
 		Class.forName("org.postgresql.Driver");
-		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13","tya13","Nilesh@3304");
+		conn=DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx","examx","examxpass");
 
 		if(conn!=null)
 		{
@@ -38,8 +38,8 @@ public class JDBC3
 	}
 }
 
-CREATE DATABASE tya13;
-\c tya13
+CREATE DATABASE examx;
+\c examx
  CREATE TABLE users 
 (
     id SERIAL PRIMARY KEY,
