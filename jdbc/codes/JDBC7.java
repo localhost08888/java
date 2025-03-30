@@ -66,7 +66,7 @@ public class JDBC7 extends JFrame implements ActionListener {
     private void connectDatabase() {
         try {
             Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/tya13", "tya13", "Nilesh@3304");
+            conn = DriverManager.getConnection("jdbc:postgresql://192.168.0.12/examx", "examx", "examxpass");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Database Connection Failed!");
         }
