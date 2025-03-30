@@ -14,18 +14,24 @@
     <h2>Greeting Message:</h2>
     <%
         String username = request.getParameter("username");
-        if (username != null && !username.trim().isEmpty()) {
+        if (username != null && !username.trim().isEmpty()) 
+         {
             // Get the current hour
             Calendar cal = Calendar.getInstance();
             int hour = cal.get(Calendar.HOUR_OF_DAY);
             String greeting;
 
             // Determine greeting based on the hour
-            if (hour >= 5 && hour < 12) {
+            if (hour >= 5 && hour < 12) 
+            {
                 greeting = "Good Morning";
-            } else if (hour >= 12 && hour < 17) {
+            } 
+           else if (hour >= 12 && hour < 17) 
+            {
                 greeting = "Good Afternoon";
-            } else {
+            }
+             else
+             {
                 greeting = "Good Evening";
             }
 
