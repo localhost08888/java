@@ -1,0 +1,13 @@
+Cd /option
+Ls
+Cd tomcat
+Cd bin
+./startup.sh
+ 
+
+Cd webapps
+Cd text
+Cd WEB-INF/
+
+CD classes
+Vi web.xml
