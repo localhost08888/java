@@ -132,90 +132,90 @@ public class collection5
 } 
 
 
-// import java.io.*; 
-// import java.util.*; 
+import java.io.*; 
+import java.util.*; 
  
-// public class collection5  
-// { 
-//     public static void main(String[] args)  
-//     { 
+public class collection5  
+{ 
+    public static void main(String[] args)  
+    { 
        
-//         String fileName = args[0]; 
-//         List<String> lines = new ArrayList<>(); 
+        String fileName = args[0]; 
+        List<String> lines = new ArrayList<>(); 
  
-//       try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) 
-//          { 
-//             String line; 
-//             while ((line = reader.readLine()) != null) 
-//              { 
-//                 lines.add(line); 
-//             } 
-//         } 
-//       catch (IOException e) 
-//         { 
-//             System.out.println("Error reading file: " + e.getMessage()); 
-//         } 
+      try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) 
+         { 
+            String line; 
+            while ((line = reader.readLine()) != null) 
+             { 
+                lines.add(line); 
+            } 
+        } 
+      catch (IOException e) 
+        { 
+            System.out.println("Error reading file: " + e.getMessage()); 
+        } 
  
-//         Scanner sc= new Scanner(System.in); 
+        Scanner sc= new Scanner(System.in); 
  
-//         while (true)  
-//         { 
-//             System.out.println("\nMenu:\n1. Insert line\n2. Delete line\n3. Append line\n4. 
-// Modify line\n5. Exit"); 
-//             System.out.print("Enter your choice: "); 
+        while (true)  
+        { 
+            System.out.println("\nMenu:\n1. Insert line\n2. Delete line\n3. Append line\n4. 
+Modify line\n5. Exit"); 
+            System.out.print("Enter your choice: "); 
              
-//             int choice = sc.nextInt(); 
-//             sc.nextLine(); 
+            int choice = sc.nextInt(); 
+            sc.nextLine(); 
  
-//             if (choice == 5)  
-//                break; 
+            if (choice == 5)  
+               break; 
  
-//             if (choice >= 1 && choice <= 4)  
-//             { 
-//                     System.out.print("Enter position -- "); 
-//                     int position = sc.nextInt(); 
-//                     sc.nextLine(); 
+            if (choice >= 1 && choice <= 4)  
+            { 
+                    System.out.print("Enter position -- "); 
+                    int position = sc.nextInt(); 
+                    sc.nextLine(); 
  
-//                     if (choice == 1) 
-//                         { 
-//                             System.out.print("Enter the line to insert: "); 
-//                             lines.add(position - 1, sc.nextLine()); 
-//                         } 
-//                     else if (choice == 2) 
-//                         { 
-//                             lines.remove(position - 1); 
-//                         } 
-//                     else if (choice == 3) 
-//                     { 
-//                         System.out.print("Enter the line to append: "); 
-//                         lines.add(sc.nextLine()); 
-//                     }  
-//                     else  
-//                         { 
-//                             System.out.print("Enter the new content: "); 
-//                             lines.set(position - 1, sc.nextLine()); 
-//                         } 
-//                         System.out.println("Operation successful."); 
-//             } 
-//             else 
-//             { 
-//                 System.out.println("Invalid input."); 
-//             } 
-//         } 
+                    if (choice == 1) 
+                        { 
+                            System.out.print("Enter the line to insert: "); 
+                            lines.add(position - 1, sc.nextLine()); 
+                        } 
+                    else if (choice == 2) 
+                        { 
+                            lines.remove(position - 1); 
+                        } 
+                    else if (choice == 3) 
+                    { 
+                        System.out.print("Enter the line to append: "); 
+                        lines.add(sc.nextLine()); 
+                    }  
+                    else  
+                        { 
+                            System.out.print("Enter the new content: "); 
+                            lines.set(position - 1, sc.nextLine()); 
+                        } 
+                        System.out.println("Operation successful."); 
+            } 
+            else 
+            { 
+                System.out.println("Invalid input."); 
+            } 
+        } 
  
-//         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) 
-//          { 
-//             for (String l : lines)  
-//             { 
-//                 writer.write(l); 
-//                 writer.newLine(); 
-//             } 
-//             System.out.println("File saved successfully."); 
-//         }  
-//         catch (IOException e) 
-//          { 
-//             System.out.println("Error writing to file: " + e.getMessage()); 
-//         } 
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) 
+         { 
+            for (String l : lines)  
+            { 
+                writer.write(l); 
+                writer.newLine(); 
+            } 
+            System.out.println("File saved successfully."); 
+        }  
+        catch (IOException e) 
+         { 
+            System.out.println("Error writing to file: " + e.getMessage()); 
+        } 
           
-//     } 
-// }
+    } 
+}
